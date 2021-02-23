@@ -1,0 +1,35 @@
+trigger:
+    - master
+
+pool:
+    name: Azure Pipelines
+    vmImage: 'Ubuntu-16.04'
+    demands: npm
+
+steps:
+    - task: Npm@1
+      displayName: 'npm install'
+      inputs:
+          verbose: false
+
+    - task: Npm@1
+      displayName: 'npm build'
+      inputs:
+          command: custom
+          verbose: false
+          customCommand: 'run build'
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: cmis'
+      inputs:
+          Contents: web.config
+          TargetFolder: cmis
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+          rootFolderOrFile: cmis
+          includeRootFolder: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts: drop'
